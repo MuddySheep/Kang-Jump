@@ -23,6 +23,8 @@
 #define NBBLOCK 5
 #define BIFULLSIZE 40
 
+#include "../endian_utils.h"  // why: kernel math assumes little-endian data
+
 // Assembly directives
 #define UADDO(c, a, b) asm volatile ("add.cc.u64 %0, %1, %2;" : "=l"(c) : "l"(a), "l"(b) : "memory" );
 #define UADDC(c, a, b) asm volatile ("addc.cc.u64 %0, %1, %2;" : "=l"(c) : "l"(a), "l"(b) : "memory" );
