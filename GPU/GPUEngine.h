@@ -21,6 +21,7 @@
 #include <vector>
 #include "../Constants.h"
 #include "../SECPK1/SECP256k1.h"
+#include "CudaBuffer.h"
 
 #ifdef USE_SYMMETRY
 #define KSIZE 11
@@ -67,11 +68,11 @@ private:
   Int wildOffset;
   int nbThread;
   int nbThreadPerGroup;
-  uint64_t *inputKangaroo;
-  uint64_t *inputKangarooPinned;
-  uint32_t *outputItem;
-  uint32_t *outputItemPinned;
-  uint64_t *jumpPinned;
+  CudaBuffer<uint64_t> inputKangaroo;
+  CudaBuffer<uint64_t> inputKangarooPinned;
+  CudaBuffer<uint32_t> outputItem;
+  CudaBuffer<uint32_t> outputItemPinned;
+  CudaBuffer<uint64_t> jumpPinned;
   bool initialised;
   bool lostWarning;
   uint32_t maxFound;
