@@ -23,6 +23,7 @@
 #include "Random.h"
 #include <string>
 #include <inttypes.h>
+#include "../endian_utils.h"  // why: ensure little-endian compilation
 
 // We need 1 extra block for Knuth div algorithm , Montgomery multiplication and ModInv
 #define BISIZE 256
