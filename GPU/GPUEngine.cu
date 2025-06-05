@@ -190,44 +190,34 @@ GPUEngine::GPUEngine(int nbThreadGroup,int nbThreadPerGroup,int gpuId,uint32_t m
     return;
   }
 
-  // Allocate memory
-  inputKangaroo = NULL;
-  inputKangarooPinned = NULL;
-  outputItem = NULL;
-  outputItemPinned = NULL;
-  jumpPinned = NULL;
+  // Allocate memory using RAII buffers
 
   // Input kangaroos
   kangarooSize = nbThread * GPU_GRP_SIZE * KSIZE * 8;
-  err = cudaMalloc((void **)&inputKangaroo,kangarooSize);
-  if(err != cudaSuccess) {
-    printf("GPUEngine: Allocate input memory: %s\n",cudaGetErrorString(err));
+  if(!inputKangaroo.allocateDevice(kangarooSize)) {
+    printf("GPUEngine: Allocate input memory failed\n");
     return;
   }
   kangarooSizePinned = nbThreadPerGroup * GPU_GRP_SIZE *  KSIZE * 8;
-  err = cudaHostAlloc(&inputKangarooPinned,kangarooSizePinned,cudaHostAllocWriteCombined | cudaHostAllocMapped);
-  if(err != cudaSuccess) {
-    printf("GPUEngine: Allocate input pinned memory: %s\n",cudaGetErrorString(err));
+  if(!inputKangarooPinned.allocateHost(kangarooSizePinned,cudaHostAllocWriteCombined | cudaHostAllocMapped)) {
+    printf("GPUEngine: Allocate input pinned memory failed\n");
     return;
   }
 
   // OutputHash
-  err = cudaMalloc((void **)&outputItem,outputSize);
-  if(err != cudaSuccess) {
-    printf("GPUEngine: Allocate output memory: %s\n",cudaGetErrorString(err));
+  if(!outputItem.allocateDevice(outputSize)) {
+    printf("GPUEngine: Allocate output memory failed\n");
     return;
   }
-  err = cudaHostAlloc(&outputItemPinned,outputSize,cudaHostAllocMapped);
-  if(err != cudaSuccess) {
-    printf("GPUEngine: Allocate output pinned memory: %s\n",cudaGetErrorString(err));
+  if(!outputItemPinned.allocateHost(outputSize,cudaHostAllocMapped)) {
+    printf("GPUEngine: Allocate output pinned memory failed\n");
     return;
   }
 
   // Jump array
   jumpSize = NB_JUMP * 8 * 4;
-  err = cudaHostAlloc(&jumpPinned,jumpSize,cudaHostAllocMapped);
-  if(err != cudaSuccess) {
-    printf("GPUEngine: Allocate jump pinned memory: %s\n",cudaGetErrorString(err));
+  if(!jumpPinned.allocateHost(jumpSize,cudaHostAllocMapped)) {
+    printf("GPUEngine: Allocate jump pinned memory failed\n");
     return;
   }
 
@@ -253,13 +243,7 @@ GPUEngine::GPUEngine(int nbThreadGroup,int nbThreadPerGroup,int gpuId,uint32_t m
 }
 
 GPUEngine::~GPUEngine() {
-
-  if(inputKangaroo) cudaFree(inputKangaroo);
-  if(outputItem) cudaFree(outputItem);
-  if(inputKangarooPinned) cudaFreeHost(inputKangarooPinned);
-  if(outputItemPinned) cudaFreeHost(outputItemPinned);
-  if(jumpPinned) cudaFreeHost(jumpPinned);
-
+  // buffers free themselves via RAII
 }
 
 
