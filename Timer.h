@@ -20,6 +20,11 @@
 
 #include <time.h>
 #include <string>
+#include <cstdint>  // why: uint32_t used below
+#include "endian_utils.h"  // why: ensure little-endian compilation
+#include <cassert>
+
+static_assert(sizeof(uint32_t) == 4, "Timer requires 32-bit uint32_t");
 #ifdef WIN64
 #include <windows.h>
 #endif

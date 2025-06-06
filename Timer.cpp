@@ -16,6 +16,10 @@
 */
 
 #include "Timer.h"
+#include <cstdint>  // why: uint32_t usage
+#include "endian_utils.h"  // why: compile-time endianness check
+
+static_assert(sizeof(uint32_t) == 4, "Timer requires 32-bit uint32_t");
 
 static const char *prefix[] = { "","Kilo","Mega","Giga","Tera","Peta","Hexa" };
 
